@@ -82,9 +82,3 @@ function App() {
 
 export default App;
 ```
-
-Replace your App.tsx with this, then run in Cursor terminal:
-```
-git add .
-git commit -m "add mobile notice"
-git push origin main
