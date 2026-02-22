@@ -45,7 +45,7 @@ function App() {
                     : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
                 }`}
               >
-                MOIC / IRR
+                Deal Returns
               </button>
               <button
                 onClick={() => setActiveTab('simulator')}
@@ -55,7 +55,7 @@ function App() {
                     : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
                 }`}
               >
-                Simulator
+                Value Creation
               </button>
             </div>
           </div>

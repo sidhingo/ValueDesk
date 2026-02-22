@@ -52,7 +52,6 @@ const ValueCreationSimulator = () => {
 
   const formatCurrency = (val) => Math.round(val).toLocaleString();
 
-  // Updated labelStyle for mobile: removed fixed height h-[42px] for auto height on small screens
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end overflow-hidden";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
   const headerStyle = "text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em] mb-6 border-b border-[#E2E8F0] pb-2";
@@ -143,7 +142,6 @@ const ValueCreationSimulator = () => {
             <div className="animate-in fade-in duration-500">
               <div className="text-center space-y-4">
                 <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.4em] block">Total Value Created</span>
-                {/* Responsive text size: 4xl on phone, 6xl on desktop */}
                 <div className="text-4xl md:text-6xl font-light tracking-tighter text-[#1E293B]">
                   ${formatCurrency(totalValueCreated)}M
                 </div>
@@ -187,6 +185,15 @@ const ValueCreationSimulator = () => {
               <div className="overflow-x-auto">
                 <p className="text-[11px] md:text-[12px] font-mono text-[#1E293B] bg-[#F8FAFC] p-3 border border-[#E2E8F0] whitespace-nowrap">
                   Exit EBITDA × (Exit Multiple - Entry Multiple)
+                </p>
+              </div>
+            </div>
+            <div>
+              <span className="text-[11px] font-bold text-[#475569] uppercase block mb-1">Performance Upside</span>
+              <p className="text-[12px] text-[#64748B] mb-2 leading-relaxed">Total value created as a percentage increase over the initial entry enterprise value.</p>
+              <div className="overflow-x-auto">
+                <p className="text-[11px] md:text-[12px] font-mono text-[#1E293B] bg-[#F8FAFC] p-3 border border-[#E2E8F0] whitespace-nowrap">
+                  (Total Value Created / Entry Enterprise Value) × 100
                 </p>
               </div>
             </div>
