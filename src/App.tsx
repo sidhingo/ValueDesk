@@ -60,14 +60,21 @@ function App() {
             </div>
           </div>
 
+          {/* KEY CHANGE: render all three tabs always, just hide inactive ones */}
           <div className="p-4 md:p-12 text-[#334155] overflow-x-auto">
-            {activeTab === 'benchmarking' && <FundBenchmarking />}
-            {activeTab === 'moic' && <MOICCalculator />}
-            {activeTab === 'simulator' && <ValueCreationSimulator />}
+            <div className={activeTab === 'benchmarking' ? 'block' : 'hidden'}>
+              <FundBenchmarking />
+            </div>
+            <div className={activeTab === 'moic' ? 'block' : 'hidden'}>
+              <MOICCalculator />
+            </div>
+            <div className={activeTab === 'simulator' ? 'block' : 'hidden'}>
+              <ValueCreationSimulator />
+            </div>
           </div>
         </div>
 
-        {/* MOBILE NOTICE — only visible on phone/tablet, hidden on desktop */}
+        {/* MOBILE NOTICE */}
         <div className="block md:hidden mt-6 text-center text-[10px] text-[#94A3B8] uppercase tracking-[0.2em] font-bold border border-[#E2E8F0] py-3 px-4 bg-[#F8FAFC]">
           ⓘ Best experienced on desktop
         </div>
