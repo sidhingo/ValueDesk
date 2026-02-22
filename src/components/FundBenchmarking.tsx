@@ -78,31 +78,32 @@ const FundBenchmarking = () => {
     setLoading(false);
   };
 
-  const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-[42px] flex items-end";
+  // RESPONSIVE STYLES
+  const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
   const headerStyle = "text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em] mb-6 border-b border-[#E2E8F0] pb-2";
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-20 font-sans bg-white text-left">
+    <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 pb-10 md:pb-20 font-sans bg-white text-left">
       
-      {/* 1. FULL WIDTH DESCRIPTOR - MATCHES VALUE CREATION SCREENSHOT */}
+      {/* 1. DESCRIPTOR */}
       <div className="max-w-full">
-        <p className="text-[16px] text-[#64748B] leading-[1.7] font-normal">
+        <p className="text-[14px] md:text-[16px] text-[#64748B] leading-[1.7] font-normal">
           Evaluate private equity fund performance relative to institutional peer groups. 
           By isolating returns within specific vintage years and strategies, this tool 
           identifies true manager alpha and market positioning across TVPI, DPI, and IRR.
         </p>
       </div>
 
-      {/* 2. DUAL PANEL GRID - STARTING FLUSH AT THE TOP */}
+      {/* 2. DUAL PANEL GRID */}
       <div className="flex flex-col lg:flex-row gap-8 items-stretch">
         
         {/* INPUT WORKSPACE */}
-        <div className="lg:w-2/3 bg-white p-8 border border-[#E2E8F0] shadow-sm">
+        <div className="w-full lg:w-2/3 bg-white p-6 md:p-8 border border-[#E2E8F0] shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
             <div className="space-y-6">
               <h3 className={headerStyle}>Fund Context</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelStyle}>Vintage Year</label>
                   <input type="number" placeholder="2018" value={draft.vintageYear} onChange={(e)=>setDraft({...draft, vintageYear: e.target.value})} className={inputStyle}/>
@@ -124,7 +125,7 @@ const FundBenchmarking = () => {
 
             <div className="space-y-6">
               <h3 className={headerStyle}>Performance</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3 md:gap-4">
                 <div>
                   <label className={labelStyle}>TVPI (X)</label>
                   <input type="number" step="0.1" placeholder="2.5" value={draft.tvpi} onChange={(e)=>setDraft({...draft, tvpi: e.target.value})} className={inputStyle}/>
@@ -147,14 +148,14 @@ const FundBenchmarking = () => {
           </div>
         </div>
 
-        {/* RESULTS PANEL - FLUSH WITH INPUT BOX TOP */}
-        <div className="lg:w-1/3 bg-[#F8FAFC] border border-[#E2E8F0] p-10 flex flex-col justify-center shadow-inner min-h-[420px]">
+        {/* RESULTS PANEL */}
+        <div className="w-full lg:w-1/3 bg-[#F8FAFC] border border-[#E2E8F0] p-6 md:p-10 flex flex-col justify-center shadow-inner min-h-[300px] md:min-h-[420px]">
           {!displayResults ? (
             <div className="text-center text-[#94A3B8] italic text-[13px] font-normal leading-relaxed">
               Enter fund metrics to see<br/>quartile rankings.
             </div>
           ) : (
-            <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="space-y-6 md:space-y-8 animate-in fade-in duration-500">
               <h3 className="text-center text-[10px] font-black text-[#94A3B8] uppercase tracking-[0.4em]">Quartile Rankings</h3>
               {displayResults.status === 'success' ? (
                 ['tvpi', 'dpi', 'irr'].map((key) => (
@@ -162,13 +163,13 @@ const FundBenchmarking = () => {
                     <div key={key} className="border-b border-[#E2E8F0] last:border-0 pb-5 flex justify-between items-end">
                       <div>
                         <span className="text-[10px] font-bold text-[#64748B] uppercase block mb-1 tracking-wider">{key}</span>
-                        <span className="text-3xl font-light text-[#1E293B]">
+                        <span className="text-2xl md:text-3xl font-light text-[#1E293B]">
                           {displayResults.values[key]}{key === 'irr' ? '%' : 'x'}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[11px] font-black uppercase text-[#1E293B] block tracking-tight">{displayResults.metrics[key].quartile}</span>
-                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-tighter italic">{displayResults.metrics[key].rank}</span>
+                        <span className="text-[10px] md:text-[11px] font-black uppercase text-[#1E293B] block tracking-tight">{displayResults.metrics[key].quartile}</span>
+                        <span className="text-[9px] md:text-[10px] text-emerald-600 font-bold uppercase tracking-tighter italic">{displayResults.metrics[key].rank}</span>
                       </div>
                     </div>
                   )
@@ -182,17 +183,17 @@ const FundBenchmarking = () => {
       </div>
 
       {/* FOOTER LOGIC & STRATEGY */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 border-t border-[#E2E8F0] pt-12">
-        <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 border-t border-[#E2E8F0] pt-12">
+        <div className="space-y-6 md:space-y-8">
           <h3 className="text-[#1E293B] text-[11px] font-black uppercase tracking-[0.3em] italic opacity-40">Calculation Logic</h3>
           <p className="text-[13px] text-[#64748B] leading-[1.7] font-normal">
             Performance is benchmarked against a specific peer group defined by vintage year and asset strategy. Analysis follows institutional quartile thresholds where the 1st Quartile represents the top 25% of the peer universe.
           </p>
         </div>
 
-        <div className="space-y-8 text-left">
+        <div className="space-y-6 md:space-y-8 text-left">
           <h3 className="text-[#1E293B] text-[11px] font-black uppercase tracking-[0.3em] italic opacity-40">LP Strategy</h3>
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             <div className="border-l border-[#1E293B] pl-5">
               <strong className="text-[12px] text-[#1E293B] uppercase tracking-[0.15em] block mb-2 font-black">DPI vs TVPI</strong>
               <p className="text-[13px] text-[#64748B] leading-[1.7]">LPs prioritize realized returns (DPI) over paper gains (TVPI) in maturing funds to de-risk portfolios.</p>
