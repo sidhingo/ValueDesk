@@ -149,7 +149,7 @@ const MOIC_IRRCalculator = () => {
               </div>
               <div className="flex flex-col items-center pt-2 min-w-[250px]">
                 <span className="text-[9px] font-bold text-[#94A3B8] uppercase mb-2">Step 2: Annualized Growth</span>
-                <div className="text-[16px] md:text-[18px] text-[#1E293B] font-serif tracking-widest italic">IRR = ( MOIC <sup>1 / t</sup> ) - 1</div>
+                <div className="text-[12px] md:text-[14px] text-[#1E293B] font-mono text-center italic">IRR = ( MOIC <sup>1 / t</sup> ) - 1</div>
               </div>
             </div>
           </div>
