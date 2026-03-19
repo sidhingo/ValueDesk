@@ -1,0 +1,15 @@
+name: Keep Supabase Active
+on:
+  schedule:
+    - cron: '0 0 */4 * *' # Runs every 4 days
+  workflow_dispatch: # Allows you to run it manually
+
+jobs:
+  ping_db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Request to Supabase
+        run: |
+          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/fund_benchmarks?select=*" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
