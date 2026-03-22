@@ -60,6 +60,7 @@ const FundBenchmarking = () => {
     setLoading(true);
     
     const year = parseInt(draft.vintageYear);
+    console.log('Vintage year being used:', year, typeof year);
     const newResults: any = { 
         status: 'success', 
         values: { ...draft }, 
@@ -71,7 +72,7 @@ const FundBenchmarking = () => {
       .from('fund_benchmarks')
       .select('*')
       .eq('vintage_year', year);
-
+      console.log('Benchmark data returned:', benchmarkData);
     const metrics = ['TVPI', 'DPI', 'IRR'];
     metrics.forEach(mType => {
         const key = mType.toLowerCase();
