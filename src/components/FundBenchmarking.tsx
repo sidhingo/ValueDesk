@@ -33,16 +33,32 @@ const FundBenchmarking = () => {
 
   const normalizeGeography = (geo: string): string => {
     if (!geo || geo.toLowerCase() === 'n/a') return 'N/A';
-    const g = geo.trim().toLowerCase();
-    if (g.includes('asia') || g.includes('china') || g.includes('japan') || g.includes('korea')) return 'Asia';
-    if (g.includes('europe') || g.includes('uk') || g.includes('united kingdom') || g.includes('germany') || g.includes('france')) return 'Europe';
-    if (g.includes('middle east') || g.includes('gulf') || g.includes('mena')) return 'Middle East';
-    if (g.includes('latin america') || g.includes('south america') || g.includes('brazil') || g.includes('mexico')) return 'Latin America';
-    if (g.includes('africa')) return 'Africa';
-    if (g.includes('australia') || g.includes('oceania') || g.includes('new zealand')) return 'Australasia';
-    if (g.includes('global') || g.includes('worldwide') || g.includes('international')) return 'Global';
-    if (g === 'us' || g.includes('united states') || g.includes('north america') || g.includes('midwest') || g.includes('northeast') || g.includes('southwest') || g.includes('northwest')) return 'North America';
-    return geo.trim();
+    const g = geo.trim();
+    const lower = g.toLowerCase();
+  
+    // Regional consolidations only
+    if (lower === 'north america') return 'North America';
+    if (lower === 'south america') return 'Latin America';
+    if (lower === 'latin america') return 'Latin America';
+    if (lower === 'southeast asia') return 'Southeast Asia';
+    if (lower === 'east asia') return 'East Asia';
+    if (lower === 'middle east') return 'Middle East';
+    if (lower === 'mena') return 'Middle East';
+    if (lower === 'gulf') return 'Middle East';
+    if (lower === 'sub-saharan africa') return 'Africa';
+    if (lower === 'africa') return 'Africa';
+    if (lower === 'global' || lower === 'worldwide' || lower === 'international') return 'Global';
+    if (lower === 'australasia') return 'Australia';
+  
+    // US regional terms → US
+    if (['midwest', 'northeast', 'southeast', 'southwest', 'northwest'].includes(lower)) return 'US';
+  
+    // Offshore territories
+    if (lower === 'british virgin islands') return 'US';
+    if (lower === 'cayman islands' || lower === 'cayman') return 'UK';
+  
+    // Everything else — country or named region — use as-is
+    return g;
   };
 
   const normalizeStatus = (status: string): string => {
@@ -306,9 +322,9 @@ const FundBenchmarking = () => {
                   <label className={labelStyle}>Strategy</label>
                   <div
                     title={draft.strategy}
-                    className="w-full bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-3 text-[14px] text-[#1E293B] truncate overflow-hidden whitespace-nowrap cursor-default"
+                    className="w-full bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-3 text-[14px] text-[#1E293B] truncate overflow-hidden whitespace-nowrap cursor-default min-h-[46px] flex items-center"
                   >
-                    {draft.strategy || <span className="text-[#94A3B8]">—</span>}
+                    {draft.strategy}
                   </div>
                 </div>
               </div>
