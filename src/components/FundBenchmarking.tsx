@@ -271,6 +271,9 @@ const FundBenchmarking = () => {
         </p>
       </div>
 
+      <div className="mb-6">
+        <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">● Live Fund Data — 21,000+ Funds</span>
+      </div>  
       <div className="relative">
         <label className={labelStyle}>Search Fund Universe</label>
         <input
@@ -499,7 +502,7 @@ const FundBenchmarking = () => {
       {/* DATA ATTRIBUTION */}
       <div className="border-t border-[#E2E8F0] pt-6 mt-4">
         <p className="text-[10px] text-[#94A3B8] leading-relaxed">
-          Disclaimer: This tool is for informational purposes only. Fund universe and performance data sourced from Preqin, February 2026. Benchmark quartile thresholds are illustrative and based on published industry averages.
+          Disclaimer: This tool is for informational purposes only. Fund universe and performance data sourced from a licensed institutional data provider, February 2026. Benchmark quartile thresholds are illustrative and based on published industry averages.
         </p>
       </div>
     </div>

@@ -3,8 +3,9 @@ import { Briefcase } from 'lucide-react';
 import FundBenchmarking from './components/FundBenchmarking';
 import MOICCalculator from './components/MOICCalculator';
 import ValueCreationSimulator from './components/ValueCreationSimulator';
+import HundredDayPlan from './components/HundredDayPlan';
 
-type Tab = 'benchmarking' | 'moic' | 'simulator';
+type Tab = 'benchmarking' | 'moic' | 'simulator' | 'hundredday';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('benchmarking');
@@ -57,6 +58,16 @@ function App() {
               >
                 Value Creation
               </button>
+              <button
+  onClick={() => setActiveTab('hundredday')}
+  className={`flex-1 md:flex-none px-4 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
+    activeTab === 'hundredday'
+      ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
+      : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
+  }`}
+>
+  100-Day Plan
+</button>
             </div>
           </div>
 
@@ -71,6 +82,9 @@ function App() {
             <div className={activeTab === 'simulator' ? 'block' : 'hidden'}>
               <ValueCreationSimulator />
             </div>
+            <div className={activeTab === 'hundredday' ? 'block' : 'hidden'}>
+  <HundredDayPlan />
+</div>
           </div>
         </div>
 
