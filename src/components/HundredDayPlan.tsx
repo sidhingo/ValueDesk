@@ -176,13 +176,10 @@ const HundredDayPlan = () => {
       'Over $1B': 'Transformation office setup is essential. Workstream leads must operate with autonomy and clear accountability. Steering committee cadence is non-negotiable.'
     };
 
-    // Map thesis input to key (handle both spellings)
-    const thesisKey = thesis === 'Cost Optimisation' ? 'Cost Optimization' : thesis;
-
     const phase1Works = entryPhase1[entry] || [];
     const sectorW = sectorWorkstreams[sector];
-    const phase2Works = thesisPhase2[thesisKey] || [];
-    const phase3Works = thesisPhase3[thesisKey] || [];
+    const phase2Works = thesisPhase2[thesis] || [];
+    const phase3Works = thesisPhase3[thesis] || [];
 
     const finalPhase1 = sectorW ? [...phase1Works, sectorW.phase1] : phase1Works;
     const finalPhase2 = sectorW ? [...phase2Works, sectorW.phase2] : phase2Works;
@@ -195,8 +192,8 @@ const HundredDayPlan = () => {
       phase1: finalPhase1,
       phase2: finalPhase2,
       phase3: finalPhase3,
-      milestone: milestones[thesisKey],
-      risk: risks[thesisKey],
+      milestone: milestones[thesis],
+      risk: risks[thesis],
       inputs: { ...inputs }
     });
   };
@@ -219,12 +216,12 @@ const HundredDayPlan = () => {
       </div>
 
       {/* INPUT CARD */}
-      <div className="bg-white border border-[#E2E8F0] shadow-sm p-6 md:p-8">
+      <div className="bg-white border border-[#E2E8F0] shadow-sm p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             <h3 className={headerStyle}>Company Context</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelStyle}>Company Size</label>
                 <select value={inputs.companySize} onChange={e => handleChange('companySize', e.target.value)} className={selectStyle}>
@@ -262,7 +259,7 @@ const HundredDayPlan = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             <h3 className={headerStyle}>Deal Parameters</h3>
             <div>
               <label className={labelStyle}>Value Creation Thesis</label>
@@ -287,7 +284,7 @@ const HundredDayPlan = () => {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-[#E2E8F0] pt-8">
+        <div className="mt-8 border-t border-[#E2E8F0] pt-6">
           <button
             onClick={generatePlan}
             disabled={!inputs.companySize || !inputs.sector || !inputs.thesis || !inputs.entrySituation}
@@ -302,7 +299,6 @@ const HundredDayPlan = () => {
       {plan && (
         <div className="space-y-8 animate-in fade-in duration-500">
 
-          {/* Priority banner */}
           {plan.priority && (
             <div className="border-l-2 border-[#475569] pl-6 py-2">
               <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-[0.2em] block mb-1">Primary Focus</span>
@@ -310,7 +306,6 @@ const HundredDayPlan = () => {
             </div>
           )}
 
-          {/* Size context */}
           <div className="bg-[#F8FAFC] border border-[#E2E8F0] px-6 py-4">
             <p className="text-[13px] text-[#64748B] leading-relaxed">
               <span className="font-bold text-[#475569] uppercase tracking-wider text-[10px]">Context — </span>
@@ -318,15 +313,14 @@ const HundredDayPlan = () => {
             </p>
           </div>
 
-          {/* THREE PHASE COLUMNS */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
+          {/* THREE PHASE COLUMNS — stack on mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { label: 'Phase 1', title: 'Days 1–30: Diagnose & Stabilize', objective: 'Establish facts, secure the business, and build internal credibility.', works: plan.phase1 },
               { label: 'Phase 2', title: 'Days 31–60: Prioritize & Plan', objective: 'Design the value creation roadmap and build execution capability.', works: plan.phase2 },
               { label: 'Phase 3', title: 'Days 61–100: Execute & Deliver', objective: 'Launch initiatives, track progress, and demonstrate early value creation.', works: plan.phase3 }
             ].map((phase, idx) => (
-              <div key={idx} className="border border-[#E2E8F0] p-6 space-y-4">
+              <div key={idx} className="border border-[#E2E8F0] p-5 md:p-6 space-y-4">
                 <div>
                   <span className="text-[9px] font-black text-[#94A3B8] uppercase tracking-[0.3em] block mb-1">{phase.label}</span>
                   <h3 className={phaseHeaderStyle}>{phase.title}</h3>
@@ -357,7 +351,6 @@ const HundredDayPlan = () => {
             </div>
           </div>
 
-          {/* Disclaimer */}
           <div className="border-t border-[#E2E8F0] pt-6">
             <p className="text-[10px] text-[#94A3B8] leading-relaxed">
               This framework is generated based on the parameters provided and reflects common operational patterns across PE-backed companies. It is intended as a starting point for discussion and should be validated against company-specific diligence findings, management assessments, and fund strategy. It does not constitute professional advisory services.

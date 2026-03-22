@@ -123,10 +123,11 @@ const ValueCreationSimulator = () => {
           </div>
           
           <div className="mt-10 border-t border-[#E2E8F0] pt-8">
-            <button 
-              onClick={handleCalculate}
-              className="w-full bg-[#1E293B] hover:bg-[#334155] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
-            >
+          <button 
+  onClick={handleCalculate}
+  disabled={!draft.entryRevenue || !draft.entryMargin || !draft.entryMultiple}
+  className="w-full bg-[#1E293B] hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+>
               Calculate Returns
             </button>
           </div>

@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#334155] antialiased font-sans">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-16">
         
         <div className="mb-8 md:mb-12 border-l-2 border-[#475569] pl-6">
           <div className="flex items-center gap-4 mb-2">
@@ -26,13 +26,14 @@ function App() {
 
         <div className="bg-white border border-[#E2E8F0] rounded-none shadow-xl overflow-visible">
           
+          {/* TAB BAR — horizontally scrollable on mobile */}
           <div className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
-            <div className="flex flex-wrap md:flex-nowrap">
+            <div className="flex overflow-x-auto scrollbar-hide">
               <button
                 onClick={() => setActiveTab('benchmarking')}
-                className={`flex-1 md:flex-none px-4 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-r border-[#E2E8F0] ${
+                className={`flex-none px-5 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-r border-[#E2E8F0] whitespace-nowrap ${
                   activeTab === 'benchmarking'
-                    ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]' 
+                    ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
                     : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
                 }`}
               >
@@ -40,7 +41,7 @@ function App() {
               </button>
               <button
                 onClick={() => setActiveTab('moic')}
-                className={`flex-1 md:flex-none px-4 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-r border-[#E2E8F0] ${
+                className={`flex-none px-5 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-r border-[#E2E8F0] whitespace-nowrap ${
                   activeTab === 'moic'
                     ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
                     : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
@@ -50,7 +51,7 @@ function App() {
               </button>
               <button
                 onClick={() => setActiveTab('simulator')}
-                className={`flex-1 md:flex-none px-4 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
+                className={`flex-none px-5 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all border-r border-[#E2E8F0] whitespace-nowrap ${
                   activeTab === 'simulator'
                     ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
                     : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
@@ -59,19 +60,18 @@ function App() {
                 Value Creation
               </button>
               <button
-  onClick={() => setActiveTab('hundredday')}
-  className={`flex-1 md:flex-none px-4 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
-    activeTab === 'hundredday'
-      ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
-      : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
-  }`}
->
-  100-Day Plan
-</button>
+                onClick={() => setActiveTab('hundredday')}
+                className={`flex-none px-5 md:px-10 py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
+                  activeTab === 'hundredday'
+                    ? 'bg-white text-[#0F172A] border-t-2 border-t-[#475569]'
+                    : 'text-[#94A3B8] hover:text-[#475569] hover:bg-white/50'
+                }`}
+              >
+                100-Day Plan
+              </button>
             </div>
           </div>
 
-          {/* KEY CHANGE: render all three tabs always, just hide inactive ones */}
           <div className="p-4 md:p-12 text-[#334155] overflow-x-auto">
             <div className={activeTab === 'benchmarking' ? 'block' : 'hidden'}>
               <FundBenchmarking />
@@ -83,8 +83,8 @@ function App() {
               <ValueCreationSimulator />
             </div>
             <div className={activeTab === 'hundredday' ? 'block' : 'hidden'}>
-  <HundredDayPlan />
-</div>
+              <HundredDayPlan />
+            </div>
           </div>
         </div>
 

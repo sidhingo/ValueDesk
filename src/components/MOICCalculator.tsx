@@ -100,7 +100,7 @@ const MOIC_IRRCalculator = () => {
             </div>
           </div>
           
-          <button onClick={calculatePerformance} className="mt-10 md:mt-12 w-full bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] transition-all">
+          <button onClick={calculatePerformance} disabled={!inputs.investment || !inputs.exitValue || !inputs.holdPeriod} className="mt-10 md:mt-12 w-full bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed transition-all">
             Run Deal Analysis
           </button>
         </div>
