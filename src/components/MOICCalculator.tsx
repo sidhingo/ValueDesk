@@ -115,7 +115,7 @@ const MOIC_IRRCalculator = () => {
               <div className="space-y-6 md:space-y-8">
                 <div className="border-b border-[#E2E8F0] pb-6 flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] font-bold text-[#64748B] block mb-1">IRR</span>
+                    <span className="text-[10px] font-bold text-[#64748B] block mb-1">NET IRR</span>
                     <span className="text-3xl md:text-4xl font-light text-[#1E293B]">{result.irr}%</span>
                   </div>
                   <div className="text-right">

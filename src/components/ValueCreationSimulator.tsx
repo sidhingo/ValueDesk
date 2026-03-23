@@ -50,7 +50,10 @@ const ValueCreationSimulator = () => {
     performanceUpside = entryEV !== 0 ? (totalValueCreated / entryEV) * 100 : 0;
   }
 
-  const formatCurrency = (val) => Math.round(val).toLocaleString();
+  const formatCurrency = (val) => {
+    if (val >= 1000) return `$${(val / 1000).toFixed(1)}B`;
+    return `$${Math.round(val).toLocaleString()}M`;
+  };
 
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end overflow-hidden";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
@@ -144,7 +147,7 @@ const ValueCreationSimulator = () => {
               <div className="text-center space-y-4">
                 <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.4em] block">Total Value Created</span>
                 <div className="text-4xl md:text-6xl font-light tracking-tighter text-[#1E293B]">
-                  ${formatCurrency(totalValueCreated)}M
+                  {formatCurrency(totalValueCreated)}
                 </div>
                 <div className={`text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] px-4 py-2 inline-block border-2 ${performanceUpside > 0 ? 'border-emerald-500/20 text-emerald-700 bg-white' : 'border-red-500/20 text-red-700 bg-white'}`}>
                   {performanceUpside > 0 ? '▲' : '▼'} {performanceUpside.toFixed(1)}% Performance Upside
@@ -154,11 +157,11 @@ const ValueCreationSimulator = () => {
               <div className="mt-8 md:mt-10 pt-8 border-t border-[#E2E8F0] space-y-4">
                  <div className="flex flex-col sm:flex-row justify-between text-[9px] md:text-[10px] uppercase tracking-widest text-[#64748B] gap-1">
                    <span>Projected Exit Revenue:</span>
-                   <span className="font-bold text-[#1E293B]">${formatCurrency(calculatedExitRevenue)}M</span>
+                   <span className="font-bold text-[#1E293B]">{formatCurrency(calculatedExitRevenue)}</span>
                  </div>
                  <div className="flex flex-col sm:flex-row justify-between text-[9px] md:text-[10px] uppercase tracking-widest text-[#64748B] gap-1">
                    <span>Implied Exit EV:</span>
-                   <span className="font-bold text-[#1E293B]">${formatCurrency(exitEnterpriseValue)}M</span>
+                   <span className="font-bold text-[#1E293B]">{formatCurrency(exitEnterpriseValue)}</span>
                  </div>
               </div>
             </div>
