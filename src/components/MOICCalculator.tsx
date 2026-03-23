@@ -149,7 +149,7 @@ const MOIC_IRRCalculator = () => {
               </div>
               <div className="flex flex-col items-center pt-2 min-w-[250px]">
                 <span className="text-[9px] font-bold text-[#94A3B8] uppercase mb-2">Step 2: Annualized Growth</span>
-                <div className="text-[12px] md:text-[14px] text-[#1E293B] font-mono text-center italic">IRR = ( MOIC <sup>1 / t</sup> ) - 1</div>
+                <div className="text-[12px] md:text-[14px] text-[#1E293B] font-mono text-center italic">NET IRR = ( MOIC <sup>1 / t</sup> ) - 1</div>
               </div>
             </div>
           </div>
@@ -168,7 +168,12 @@ const MOIC_IRRCalculator = () => {
           </div>
         </div>
       </div>
-    </div>
+      <div className="border-t border-[#E2E8F0] pt-6 mt-4">
+  <p className="text-[10px] text-[#94A3B8] leading-relaxed">
+    Disclaimer: Returns are modelled using simplified assumptions. IRR assumes all flows are received at exit, with no leverage, tax, management fees, or carried interest applied.
+  </p>
+</div>
+</div>
   );
 };
 

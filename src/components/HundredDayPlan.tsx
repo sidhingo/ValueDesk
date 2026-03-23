@@ -353,7 +353,7 @@ const HundredDayPlan = () => {
 
           <div className="border-t border-[#E2E8F0] pt-6">
             <p className="text-[10px] text-[#94A3B8] leading-relaxed">
-              This framework is generated based on the parameters provided and reflects common operational patterns across PE-backed companies. It is intended as a starting point for discussion and should be validated against company-specific diligence findings, management assessments, and fund strategy. It does not constitute professional advisory services.
+              Disclaimer: This framework is generated based on the parameters provided and reflects common operational patterns across PE-backed companies. It is intended as a starting point for discussion and should be validated against company-specific diligence findings, management assessments, and fund strategy. It does not constitute professional advisory services.
             </p>
           </div>
 
