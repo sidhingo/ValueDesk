@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Briefcase } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import FundBenchmarking from './components/FundBenchmarking';
 import MOICCalculator from './components/MOICCalculator';
 import ValueCreationSimulator from './components/ValueCreationSimulator';
@@ -97,6 +98,7 @@ function App() {
           <span>Value Desk // Proprietary Analytics by sidhingo</span>
         </div>
       </div>
+      <Analytics />
     </div>
   );
 }
