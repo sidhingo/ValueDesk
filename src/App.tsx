@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Briefcase } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import FundBenchmarking from './components/FundBenchmarking';
 import MOICCalculator from './components/MOICCalculator';
 import ValueCreationSimulator from './components/ValueCreationSimulator';
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#334155] antialiased font-sans">
+      <Analytics />
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-16">
         
         <div className="mb-8 md:mb-12 border-l-2 border-[#475569] pl-6">
