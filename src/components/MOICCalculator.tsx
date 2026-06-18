@@ -163,7 +163,85 @@ const MOIC_IRRCalculator = () => {
           )}
         </div>
       </div>
+{/* IRR SENSITIVITY TABLE */}
+{result && (
+        <div className="border border-[#E2E8F0] p-6 md:p-8 space-y-5">
+          <div className="flex items-baseline gap-3 border-b border-[#E2E8F0] pb-4">
+            <h3 className="text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em]">
+              IRR Sensitivity
+            </h3>
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">
+              Exit Multiple vs Hold Period. highlighted cell reflects user inputs
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            {(() => {
+              const holdYears = [3, 4, 5, 6, 7];
+              const actualMoic = parseFloat(result.moic);
+              const actualHold = parseFloat(inputs.holdPeriod);
+              const steps = [-1.5, -1.0, -0.5, 0, 0.5, 1.0, 1.5];
+              const rows = steps.map(s => Math.max(0.25, parseFloat((actualMoic + s).toFixed(2))));
 
+              const getIrrColor = (irr: number, isSelected: boolean) => {
+                if (isSelected) return 'bg-[#1E293B] text-white';
+                if (irr >= 20) return 'text-emerald-600';
+                if (irr >= 10) return 'text-amber-500';
+                return 'text-red-400';
+              };
+
+              return (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#E2E8F0]">
+                      <th className="text-[9px] font-black text-[#94A3B8] uppercase tracking-widest pb-3 pr-4 whitespace-nowrap">
+                        Exit Multiple
+                      </th>
+                      {holdYears.map(y => (
+                        <th
+                          key={y}
+                          className={`text-[9px] font-black uppercase tracking-widest pb-3 pr-4 text-center whitespace-nowrap ${
+                            y === actualHold ? 'text-[#1E293B]' : 'text-[#94A3B8]'
+                          }`}
+                        >
+                          {y} yrs
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((rowMoic, ri) => {
+                      const isSelectedRow = rowMoic === actualMoic;
+                      return (
+                        <tr key={ri} className="border-b border-[#F1F5F9] last:border-0">
+                          <td className={`py-3 pr-4 text-[11px] whitespace-nowrap ${
+                            isSelectedRow ? 'font-black text-[#1E293B]' : 'text-[#64748B]'
+                          }`}>
+                            {rowMoic.toFixed(2)}x
+                          </td>
+                          {holdYears.map(y => {
+                            const irr = (Math.pow(rowMoic, 1 / y) - 1) * 100;
+                            const isSelected = isSelectedRow && y === actualHold;
+                            return (
+                              <td key={y} className="py-3 pr-4 text-center">
+                                <span className={`text-[11px] font-bold px-2 py-1 ${getIrrColor(irr, isSelected)} ${isSelected ? 'rounded-none' : ''}`}>
+                                  {irr.toFixed(1)}%
+                                </span>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              );
+            })()}
+          </div>
+          <p className="text-[10px] text-[#94A3B8] italic">
+            IRR calculated using the same simplified methodology as the main analysis. Entry fees, exit fees, and interim flows are held constant across all cells.
+          </p>
+        </div>
+      )}
       {/* FOOTER CALCS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 border-t border-[#E2E8F0] pt-12">
         <div className="space-y-8">
