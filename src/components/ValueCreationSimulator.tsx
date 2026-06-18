@@ -215,7 +215,115 @@ const ValueCreationSimulator = () => {
           )}
         </div>
       </div>
+{/* VALUE CREATION WATERFALL */}
+{display && (
+        <div className="border border-[#E2E8F0] p-6 md:p-8 space-y-5">
+          <div className="flex items-baseline gap-3 border-b border-[#E2E8F0] pb-4">
+            <h3 className="text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em]">
+              Value Creation Bridge
+            </h3>
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">
+              Enterprise value waterfall from entry to exit
+            </span>
+          </div>
 
+          {(() => {
+            const numEntryRev = Number(display.entryRevenue);
+            const numGrowth = Number(display.growthRate);
+            const numHold = Number(display.holdPeriod);
+            const numEntryMargin = Number(display.entryMargin);
+            const numTargetMargin = Number(display.targetMargin);
+            const numEntryMult = Number(display.entryMultiple);
+            const numExitMult = Number(display.exitMultiple);
+            const numExitNetDebt = Number(display.exitNetDebt) || 0;
+
+            const exitRevenue = numEntryRev * Math.pow(1 + numGrowth / 100, numHold);
+            const entryEBITDA = numEntryRev * (numEntryMargin / 100);
+            const exitEBITDA = exitRevenue * (numTargetMargin / 100);
+            const entryEV = entryEBITDA * numEntryMult;
+            const exitEV = exitEBITDA * numExitMult;
+            const opValueAdd = (exitEBITDA - entryEBITDA) * numEntryMult;
+            const reRating = exitEBITDA * (numExitMult - numEntryMult);
+            const impliedEquity = exitEV - numExitNetDebt;
+
+            const hasDebt = numExitNetDebt > 0;
+
+            // Build bars array
+            const bars = [
+              { label: 'Entry EV', value: entryEV, type: 'base' },
+              { label: 'Operational Value Add', value: opValueAdd, type: opValueAdd >= 0 ? 'positive' : 'negative' },
+              { label: 'Valuation Re-Rating', value: reRating, type: reRating >= 0 ? 'positive' : 'negative' },
+              { label: 'Exit EV', value: exitEV, type: 'base' },
+              ...(hasDebt ? [{ label: 'Exit Net Debt', value: -numExitNetDebt, type: 'negative' as const }] : []),
+              ...(hasDebt ? [{ label: 'Exit Equity Value', value: impliedEquity, type: 'base' as const }] : []),
+            ];
+
+            // Scale bars to max absolute value for proportional height
+            const allValues = bars.map(b => Math.abs(b.value));
+            const maxVal = Math.max(...allValues);
+            const maxBarHeight = 120;
+
+            const getBarStyle = (type: string) => {
+              if (type === 'base') return 'bg-[#1E293B]';
+              if (type === 'positive') return 'bg-emerald-500';
+              return 'bg-red-400';
+            };
+
+            const getLabelColor = (type: string) => {
+              if (type === 'base') return 'text-[#1E293B]';
+              if (type === 'positive') return 'text-emerald-600';
+              return 'text-red-500';
+            };
+
+            return (
+              <div className="overflow-x-auto">
+                <div className="flex items-end gap-3 md:gap-6 min-w-[480px] pt-4" style={{ height: `${maxBarHeight + 80}px` }}>
+                  {bars.map((bar, i) => {
+                    const barHeight = Math.max(4, (Math.abs(bar.value) / maxVal) * maxBarHeight);
+                    return (
+                      <div key={i} className="flex flex-col items-center flex-1 min-w-[60px]">
+                        {/* Value label above bar */}
+                        <span className={`text-[9px] md:text-[10px] font-bold mb-2 text-center whitespace-nowrap ${getLabelColor(bar.type)}`}>
+                          {bar.value < 0 ? '-' : ''}{formatCurrency(Math.abs(bar.value))}
+                        </span>
+                        {/* Bar */}
+                        <div
+                          className={`w-full ${getBarStyle(bar.type)} transition-all`}
+                          style={{ height: `${barHeight}px` }}
+                        />
+                        {/* Bar label below */}
+                        <span className="text-[8px] md:text-[9px] font-bold text-[#94A3B8] uppercase tracking-wide mt-2 text-center leading-tight">
+                          {bar.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div className="flex gap-6 mt-4 pt-4 border-t border-[#F1F5F9]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-[#1E293B]" />
+                    <span className="text-[9px] text-[#94A3B8] uppercase tracking-widest font-bold">EV Reference</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-emerald-500" />
+                    <span className="text-[9px] text-[#94A3B8] uppercase tracking-widest font-bold">Value Created</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-400" />
+                    <span className="text-[9px] text-[#94A3B8] uppercase tracking-widest font-bold">Value Reduction</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          <p className="text-[10px] text-[#94A3B8] italic">
+            Operational Value Add and Valuation Re-Rating sum to Total Value Created. Exit Net Debt bar appears only when a debt figure is entered.
+          </p>
+        </div>
+      )}
       {/* CALCULATION LOGIC & STRATEGY */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 border-t border-[#E2E8F0] pt-12">
         <div className="space-y-8">
