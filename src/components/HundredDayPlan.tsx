@@ -197,7 +197,16 @@ const HundredDayPlan = () => {
       inputs: { ...inputs }
     });
   };
-
+  const resetPlan = () => {
+    setInputs({
+      companySize: '',
+      sector: '',
+      thesis: '',
+      entrySituation: '',
+      priority: ''
+    });
+    setPlan(null);
+  };
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
   const selectStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all appearance-none cursor-pointer";
@@ -248,7 +257,7 @@ const HundredDayPlan = () => {
               </div>
             </div>
             <div>
-              <label className={labelStyle}>Primary Priority</label>
+              <label className={labelStyle}>Primary Priority (optional)</label>
               <input
                 type="text"
                 placeholder="e.g. Reduce SG&A by 15% within 6 months"
@@ -284,13 +293,20 @@ const HundredDayPlan = () => {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-[#E2E8F0] pt-6">
+        <div className="mt-8 border-t border-[#E2E8F0] pt-6 flex gap-3">
           <button
             onClick={generatePlan}
             disabled={!inputs.companySize || !inputs.sector || !inputs.thesis || !inputs.entrySituation}
-            className="w-full bg-[#1E293B] hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            className="flex-1 bg-[#1E293B] hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
           >
             Generate Plan
+          </button>
+          <button
+            onClick={resetPlan}
+            type="button"
+            className="w-32 border border-[#E2E8F0] text-[#64748B] hover:border-[#475569] hover:text-[#475569] font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+          >
+            Reset
           </button>
         </div>
       </div>

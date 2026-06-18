@@ -227,6 +227,17 @@ const FundBenchmarking = () => {
     setLoading(false);
   };
 
+  const handleReset = () => {
+    setSearchTerm('');
+    setSearchResults([]);
+    setShowDropdown(false);
+    setDraft({
+      fundName: '', firmName: '', vintageYear: '', strategy: '',
+      geography: '', fundSize: '', status: '', sector: '',
+      tvpi: '', dpi: '', irr: ''
+    });
+    setDisplayResults(null);
+  };
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
   const headerStyle = "text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em] mb-6 border-b border-[#E2E8F0] pb-2";
@@ -373,9 +384,18 @@ const FundBenchmarking = () => {
             </div>
           </div>
 
-          <button onClick={handleAnalyze} disabled={!draft.vintageYear} className="mt-10 md:mt-12 w-full bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed transition-all">
-            Benchmark Performance
-          </button>
+          <div className="mt-10 md:mt-12 flex gap-3">
+            <button onClick={handleAnalyze} disabled={!draft.vintageYear} className="flex-1 bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed transition-all">
+              Benchmark Performance
+            </button>
+            <button
+              onClick={handleReset}
+              type="button"
+              className="w-32 border border-[#E2E8F0] text-[#64748B] hover:border-[#475569] hover:text-[#475569] font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
         {/* RIGHT CARD: Analysis Output */}
@@ -499,7 +519,7 @@ const FundBenchmarking = () => {
       {/* DATA ATTRIBUTION */}
       <div className="border-t border-[#E2E8F0] pt-6 mt-4">
         <p className="text-[10px] text-[#94A3B8] leading-relaxed">
-          Disclaimer: This tool is for informational purposes only. Fund universe and performance data sourced from a licensed institutional data provider, February 2026. Benchmark quartile thresholds are illustrative and based on published industry averages.
+          Disclaimer: This tool is for informational purposes only. Fund universe and performance data sourced from a licensed institutional data provider, Q1 2026. Benchmark quartile thresholds are illustrative and based on published industry averages.
         </p>
       </div>
     </div>

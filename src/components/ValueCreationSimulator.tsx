@@ -19,9 +19,31 @@ const ValueCreationSimulator = () => {
   };
 
   const handleCalculate = () => {
-    if (draft.entryRevenue && draft.entryMargin && draft.entryMultiple) {
+    if (
+      draft.entryRevenue &&
+      draft.growthRate &&
+      draft.entryMargin &&
+      draft.targetMargin &&
+      draft.holdPeriod &&
+      draft.entryMultiple &&
+      draft.exitMultiple
+    ) {
       setDisplay({ ...draft });
     }
+  };
+
+  const handleReset = () => {
+    setDraft({
+      entryRevenue: '',
+      growthRate: '',
+      entryMargin: '',
+      targetMargin: '',
+      holdPeriod: '',
+      entryMultiple: '',
+      exitMultiple: '',
+      exitNetDebt: ''
+    });
+    setDisplay(null);
   };
 
   // --- MATH ENGINE ---
@@ -29,6 +51,7 @@ const ValueCreationSimulator = () => {
   let exitEnterpriseValue = 0;
   let totalValueCreated = 0;
   let performanceUpside = 0;
+  let exitEquityValue = 0;
 
   if (display) {
     const numEntryRev = Number(display.entryRevenue);
@@ -38,21 +61,26 @@ const ValueCreationSimulator = () => {
     const numTargetMargin = Number(display.targetMargin);
     const numEntryMult = Number(display.entryMultiple);
     const numExitMult = Number(display.exitMultiple);
+    const numExitNetDebt = Number(display.exitNetDebt) || 0;
 
     calculatedExitRevenue = numEntryRev * Math.pow(1 + (numGrowth / 100), numHold);
     const entryEBITDA = numEntryRev * (numEntryMargin / 100);
     const exitEBITDA = calculatedExitRevenue * (numTargetMargin / 100);
-    
+
     const entryEV = entryEBITDA * numEntryMult;
     exitEnterpriseValue = exitEBITDA * numExitMult;
     totalValueCreated = exitEnterpriseValue - entryEV;
 
     performanceUpside = entryEV !== 0 ? (totalValueCreated / entryEV) * 100 : 0;
+
+    exitEquityValue = exitEnterpriseValue - numExitNetDebt;
   }
 
   const formatCurrency = (val) => {
-    if (val >= 1000) return `$${(val / 1000).toFixed(1)}B`;
-    return `$${Math.round(val).toLocaleString()}M`;
+    const abs = Math.abs(val);
+    const sign = val < 0 ? '-' : '';
+    if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(1)}B`;
+    return `${sign}$${Math.round(abs).toLocaleString()}M`;
   };
 
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end overflow-hidden";
@@ -125,13 +153,28 @@ const ValueCreationSimulator = () => {
             </div>
           </div>
           
-          <div className="mt-10 border-t border-[#E2E8F0] pt-8">
-          <button 
-  onClick={handleCalculate}
-  disabled={!draft.entryRevenue || !draft.entryMargin || !draft.entryMultiple}
-  className="w-full bg-[#1E293B] hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
->
+          <div className="mt-10 border-t border-[#E2E8F0] pt-8 flex gap-3">
+            <button
+              onClick={handleCalculate}
+              disabled={
+                !draft.entryRevenue ||
+                !draft.growthRate ||
+                !draft.entryMargin ||
+                !draft.targetMargin ||
+                !draft.holdPeriod ||
+                !draft.entryMultiple ||
+                !draft.exitMultiple
+              }
+              className="flex-1 bg-[#1E293B] hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            >
               Calculate Returns
+            </button>
+            <button
+              onClick={handleReset}
+              type="button"
+              className="w-32 border border-[#E2E8F0] text-[#64748B] hover:border-[#475569] hover:text-[#475569] font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            >
+              Reset
             </button>
           </div>
         </div>
@@ -163,6 +206,10 @@ const ValueCreationSimulator = () => {
                    <span>Implied Exit EV:</span>
                    <span className="font-bold text-[#1E293B]">{formatCurrency(exitEnterpriseValue)}</span>
                  </div>
+                 <div className="flex flex-col sm:flex-row justify-between text-[9px] md:text-[10px] uppercase tracking-widest text-[#64748B] gap-1">
+                   <span>Implied Exit Equity Value:</span>
+                   <span className="font-bold text-[#1E293B]">{formatCurrency(exitEquityValue)}</span>
+                 </div>
               </div>
             </div>
           )}
@@ -192,12 +239,21 @@ const ValueCreationSimulator = () => {
                 </p>
               </div>
             </div>
-            <div>
+            <div className="border-b border-[#F1F5F9] pb-4">
               <span className="text-[11px] font-bold text-[#475569] uppercase block mb-1">Performance Upside</span>
               <p className="text-[12px] text-[#64748B] mb-2 leading-relaxed">Total value created as a percentage increase over the initial entry enterprise value.</p>
               <div className="overflow-x-auto">
                 <p className="text-[11px] md:text-[12px] font-mono text-[#1E293B] bg-[#F8FAFC] p-3 border border-[#E2E8F0] whitespace-nowrap">
                   (Total Value Created / Entry Enterprise Value) × 100
+                </p>
+              </div>
+            </div>
+            <div>
+              <span className="text-[11px] font-bold text-[#475569] uppercase block mb-1">Implied Exit Equity Value</span>
+              <p className="text-[12px] text-[#64748B] mb-2 leading-relaxed">Exit-only reference showing equity proceeds after net debt is repaid at exit.</p>
+              <div className="overflow-x-auto">
+                <p className="text-[11px] md:text-[12px] font-mono text-[#1E293B] bg-[#F8FAFC] p-3 border border-[#E2E8F0] whitespace-nowrap">
+                  Exit Enterprise Value - Exit Net Debt
                 </p>
               </div>
             </div>
@@ -223,11 +279,11 @@ const ValueCreationSimulator = () => {
         </div>
       </div>
       <div className="border-t border-[#E2E8F0] pt-6 mt-4">
-  <p className="text-[10px] text-[#94A3B8] leading-relaxed">
-    Disclaimer: This model uses simplified assumptions. Entry EV is EBITDA-derived, growth and margin improvement are assumed linear, and exit multiple is user-defined. Results reflect enterprise value creation, not equity return.
-  </p>
-</div>
-</div>
+        <p className="text-[10px] text-[#94A3B8] leading-relaxed">
+          Disclaimer: This model uses simplified assumptions. Entry EV is EBITDA-derived, revenue growth compounds annually at a constant rate, and target margin is assumed fully achieved by the exit year with no transition path modeled. Exit multiple is user-defined. Total Value Created and Performance Upside are unlevered and reflect enterprise value throughout; Implied Exit Equity Value is a separate exit-only reference that nets out debt at exit only.
+        </p>
+      </div>
+    </div>
   );
 };
 

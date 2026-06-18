@@ -34,9 +34,28 @@ const MOIC_IRRCalculator = () => {
     setResult({
       moic: moic.toFixed(2),
       irr: irr.toFixed(1),
-      profit: totalProfit.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }),
-      netExit: netProceeds.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })
+      profit: totalProfit,
+      netExit: netProceeds
     });
+  };
+
+  const handleReset = () => {
+    setInputs({
+      investment: '',
+      entryFees: '',
+      exitValue: '',
+      exitFees: '',
+      holdPeriod: '',
+      dividends: ''
+    });
+    setResult(null);
+  };
+
+  const formatCurrency = (val: number) => {
+    const abs = Math.abs(val);
+    const sign = val < 0 ? '-' : '';
+    if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(1)}B`;
+    return `${sign}$${abs.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M`;
   };
 
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
@@ -100,9 +119,18 @@ const MOIC_IRRCalculator = () => {
             </div>
           </div>
           
-          <button onClick={calculatePerformance} disabled={!inputs.investment || !inputs.exitValue || !inputs.holdPeriod} className="mt-10 md:mt-12 w-full bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed transition-all">
-            Run Deal Analysis
-          </button>
+          <div className="mt-10 md:mt-12 flex gap-3">
+            <button onClick={calculatePerformance} disabled={!inputs.investment || !inputs.exitValue || !inputs.holdPeriod} className="flex-1 bg-[#1E293B] text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 hover:bg-[#334155] disabled:bg-[#94A3B8] disabled:cursor-not-allowed transition-all">
+              Run Deal Analysis
+            </button>
+            <button
+              onClick={handleReset}
+              type="button"
+              className="w-32 border border-[#E2E8F0] text-[#64748B] hover:border-[#475569] hover:text-[#475569] font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
         {/* RESULTS PANEL */}
@@ -125,11 +153,11 @@ const MOIC_IRRCalculator = () => {
                 </div>
                 <div className="text-center">
                   <span className="text-[10px] font-bold text-[#64748B] block mb-1">Total Net Gain</span>
-                  <span className="text-2xl md:text-3xl font-normal text-emerald-600">${result.profit}M</span>
+                  <span className="text-2xl md:text-3xl font-normal text-emerald-600">{formatCurrency(result.profit)}</span>
                 </div>
               </div>
               <div className="text-center pt-4 border-t border-[#E2E8F0]">
-                <p className="text-[9px] md:text-[10px] text-[#94A3B8] font-bold tracking-widest uppercase">Net Proceeds: ${result.netExit}M</p>
+                <p className="text-[9px] md:text-[10px] text-[#94A3B8] font-bold tracking-widest uppercase">Net Proceeds: {formatCurrency(result.netExit)}</p>
               </div>
             </div>
           )}
@@ -169,11 +197,11 @@ const MOIC_IRRCalculator = () => {
         </div>
       </div>
       <div className="border-t border-[#E2E8F0] pt-6 mt-4">
-  <p className="text-[10px] text-[#94A3B8] leading-relaxed">
-    Disclaimer: Returns are modelled using simplified assumptions. IRR assumes all flows are received at exit, with no leverage, tax, management fees, or carried interest applied.
-  </p>
-</div>
-</div>
+        <p className="text-[10px] text-[#94A3B8] leading-relaxed">
+          Disclaimer: Returns are modelled using simplified assumptions. IRR assumes all flows are received at exit, with no leverage, tax, management fees, or carried interest applied.
+        </p>
+      </div>
+    </div>
   );
 };
 
