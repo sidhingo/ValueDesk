@@ -14,6 +14,8 @@ const FundBenchmarking = () => {
 
   const [displayResults, setDisplayResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [managerFunds, setManagerFunds] = useState<any[]>([]);
+  const [showAllFunds, setShowAllFunds] = useState(false);
 
   useEffect(() => {
     const searchFunds = async () => {
@@ -96,7 +98,7 @@ const FundBenchmarking = () => {
     return `$${Math.round(num)}M`;
   };
 
-  const handleSelectFund = (fund: any) => {
+  const handleSelectFund = async (fund: any) => {
     const formatPerf = (val: any) => {
       if (!val || String(val).toLowerCase() === 'n/a') return 'N/A';
       let num = parseFloat(String(val).replace(/[x%]/g, '').replace(/,/g, ''));
@@ -120,7 +122,21 @@ const FundBenchmarking = () => {
     });
     setSearchTerm(fund.NAME);
     setShowDropdown(false);
+
+    // Fetch all funds from the same manager
+    const managerName = fund["FUND MANAGER"];
+    if (managerName) {
+      const { data: mgrData } = await supabase
+        .from('fund_universe')
+        .select('"NAME", "VINTAGE YEAR", "STRATEGY", "FINAL CLOSE SIZE (USD MN)", "NET MULTIPLE (X)", "DPI (%)", "NET IRR (%)"')
+        .eq('FUND MANAGER', managerName)
+        .order('VINTAGE YEAR', { ascending: false });
+      setManagerFunds(mgrData || []);
+    } else {
+      setManagerFunds([]);
+    }
   };
+
 
   const handleAnalyze = async () => {
     if (!draft.vintageYear || draft.vintageYear === 'N/A') return;
@@ -237,6 +253,8 @@ const FundBenchmarking = () => {
       tvpi: '', dpi: '', irr: ''
     });
     setDisplayResults(null);
+    setManagerFunds([]);
+    setShowAllFunds(false);
   };
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
@@ -473,7 +491,79 @@ const FundBenchmarking = () => {
           )}
         </div>
       </div>
+{/* FUND MANAGER TRACK RECORD */}
+{managerFunds.length > 1 && (
+        <div className="border border-[#E2E8F0] p-6 md:p-8 space-y-5">
+          <div className="flex items-baseline gap-3 border-b border-[#E2E8F0] pb-4">
+            <h3 className="text-[#1E293B] text-[11px] font-black uppercase tracking-[0.2em]">
+              Fund Manager Track Record
+            </h3>
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">
+              {draft.firmName} — {showAllFunds ? managerFunds.length : Math.min(managerFunds.length, 10)} of {managerFunds.length} funds with reported performance
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#E2E8F0]">
+                  {['Fund Name', 'Vintage', 'Strategy', 'Size', 'TVPI', 'DPI', 'NET IRR'].map((col) => (
+                    <th key={col} className="text-[9px] font-black text-[#94A3B8] uppercase tracking-widest pb-3 pr-4 whitespace-nowrap">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(showAllFunds ? managerFunds : managerFunds.slice(0, 10)).map((f, i) => {
+                  const isSelected = f.NAME === draft.fundName;
+                  const formatPerf = (val: any) => {
+                    if (!val || String(val).toLowerCase() === 'n/a') return '—';
+                    let num = parseFloat(String(val).replace(/[x%]/g, '').replace(/,/g, ''));
+                    if (isNaN(num)) return '—';
+                    if (num > 10) num = num / 100;
+                    return num.toFixed(2);
+                  };
+                  const fSize = normalizeFundSize(f["FINAL CLOSE SIZE (USD MN)"] || '');
+                  return (
+                    <tr
+                      key={i}
+                      className={`border-b border-[#F1F5F9] last:border-0 ${isSelected ? 'bg-[#F8FAFC]' : ''}`}
+                    >
+                      <td className={`py-3 pr-4 text-[11px] ${isSelected ? 'font-bold text-[#1E293B] border-l-2 border-l-[#475569] pl-2' : 'text-[#334155] pl-0'}`}>
+                        {f.NAME}
+                      </td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] whitespace-nowrap">{f["VINTAGE YEAR"] || '—'}</td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] max-w-[140px] truncate" title={f.STRATEGY || ''}>{f.STRATEGY || '—'}</td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] whitespace-nowrap">{fSize}</td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] whitespace-nowrap">{formatPerf(f["NET MULTIPLE (X)"]) !== '—' ? `${formatPerf(f["NET MULTIPLE (X)"])}x` : '—'}</td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] whitespace-nowrap">{formatPerf(f["DPI (%)"]) !== '—' ? `${formatPerf(f["DPI (%)"])}x` : '—'}</td>
+                      <td className="py-3 pr-4 text-[11px] text-[#64748B] whitespace-nowrap">{formatPerf(f["NET IRR (%)"]) !== '—' ? `${formatPerf(f["NET IRR (%)"])}%` : '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
+          {/* TOGGLE */}
+          {managerFunds.length > 10 && (
+            <button
+              onClick={() => setShowAllFunds(prev => !prev)}
+              className="text-[10px] font-bold text-[#475569] uppercase tracking-widest hover:text-[#1E293B] transition-all"
+            >
+              {showAllFunds
+                ? '▲ Show fewer funds'
+                : `▼ Show all ${managerFunds.length} funds with reported performance`}
+            </button>
+          )}
+
+          <p className="text-[10px] text-[#94A3B8] italic">
+            {showAllFunds
+              ? `Showing all ${managerFunds.length} funds with at least one reported performance metric. Matches on exact fund manager name. Variant spellings of the same firm may not appear.`
+              : `Showing ${Math.min(managerFunds.length, 10)} most recent funds. Matches on exact fund manager name. Variant spellings of the same firm may not appear.`}
+          </p>
+        </div>
+      )}
       {/* CALCULATION LOGIC & STRATEGY */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 border-t border-[#E2E8F0] pt-12 text-left">
         <div className="space-y-8">
