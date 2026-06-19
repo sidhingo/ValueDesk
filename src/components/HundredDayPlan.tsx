@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import jsPDF from 'jspdf';
 
 const HundredDayPlan = () => {
   const [inputs, setInputs] = useState({
@@ -117,7 +118,7 @@ const HundredDayPlan = () => {
       'Buy-and-Build': [
         { name: 'Target Pipeline Review', description: 'Assess current M&A pipeline against platform strategy and prioritize top acquisition targets.', owner: 'CEO / Head of Strategy' },
         { name: 'Integration Playbook Development', description: 'Build repeatable 100-day integration framework for add-on acquisitions.', owner: 'COO / Program Director' },
-        { name: 'Platform Capability Assessment', description: 'Identify platform gaps — technology, geography, talent — that acquisitions should fill.', owner: 'CEO / CFO' },
+        { name: 'Platform Capability Assessment', description: 'Identify platform gaps -- technology, geography, talent -- that acquisitions should fill.', owner: 'CEO / CFO' },
         { name: 'Due Diligence Process Standardization', description: 'Streamline DD process to enable faster deal execution as deal flow accelerates.', owner: 'CFO / General Counsel' }
       ],
       'Digital Transformation': [
@@ -170,7 +171,7 @@ const HundredDayPlan = () => {
     };
 
     const sizeModifier: Record<string, string> = {
-      'Under $50M': 'Given the lean structure of this business, prioritize quick wins and avoid over-engineering. Management bandwidth is limited — sequence initiatives carefully.',
+      'Under $50M': 'Given the lean structure of this business, prioritize quick wins and avoid over-engineering. Management bandwidth is limited -- sequence initiatives carefully.',
       '$50M – $200M': 'Focus on professionalizing key functions while maintaining the agility that drove growth to this point. Avoid imposing excessive process too early.',
       '$200M – $1B': 'Establish enterprise-grade governance and reporting without slowing operational decision-making. PMO discipline is critical at this scale.',
       'Over $1B': 'Transformation office setup is essential. Workstream leads must operate with autonomy and clear accountability. Steering committee cadence is non-negotiable.'
@@ -197,6 +198,7 @@ const HundredDayPlan = () => {
       inputs: { ...inputs }
     });
   };
+
   const resetPlan = () => {
     setInputs({
       companySize: '',
@@ -207,6 +209,289 @@ const HundredDayPlan = () => {
     });
     setPlan(null);
   };
+
+// ─── PDF EXPORT ────────────────────────────────────────────────────────────
+const exportPDF = () => {
+  if (!plan) return;
+
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  const colW = (pw - margin * 2 - 10) / 3;
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const C = {
+    navy:    [30,  41,  59]  as [number,number,number],
+    slate:   [71,  85, 105]  as [number,number,number],
+    mid:     [100,116,139]   as [number,number,number],
+    light:   [148,163,184]   as [number,number,number],
+    rule:    [226,232,240]   as [number,number,number],
+    bg:      [248,250,252]   as [number,number,number],
+    slateBg: [241,245,249]   as [number,number,number],
+    redBord: [252,165,165]   as [number,number,number],
+    white:   [255,255,255]   as [number,number,number],
+    link:    [37, 99,  235]  as [number,number,number],
+  };
+
+  // Increased font sizes
+  const NAME_H  = 5.0;
+  const DESC_H  = 4.5;
+  const OWNER_H = 5.0;
+  const PAD     = 7.0;
+
+  const colX = [
+    margin,
+    margin + colW + 5,
+    margin + (colW + 5) * 2
+  ];
+
+  const addFooter = () => {
+    const fy = ph - 6;
+    doc.setDrawColor(...C.rule);
+    doc.setLineWidth(0.2);
+    doc.line(margin, fy - 3, pw - margin, fy - 3);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...C.mid);
+    const leftText = 'Value Desk  |  PE Value Creation Intelligence Platform  |  ';
+    const linkText = 'value-desk.vercel.app';
+    const leftW = doc.getTextWidth(leftText);
+    doc.text(leftText, margin, fy);
+    doc.setTextColor(...C.link);
+    doc.text(linkText, margin + leftW, fy);
+    doc.link(margin + leftW, fy - 3, doc.getTextWidth(linkText), 4, { url: 'https://value-desk.vercel.app' });
+    doc.setTextColor(...C.mid);
+    doc.text(`Generated ${today}  |  Confidential`, pw - margin, fy, { align: 'right' });
+  };
+
+  const workH = (w: any): number => {
+    const nameLines = doc.splitTextToSize(w.name, colW - 2).length;
+    const descLines = doc.splitTextToSize(w.description, colW - 2).length;
+    return nameLines * NAME_H + descLines * DESC_H + OWNER_H + PAD;
+  };
+
+  const drawWork = (w: any, x: number, y: number, rowH: number): number => {
+    const nameLines = doc.splitTextToSize(w.name, colW - 2);
+    const descLines = doc.splitTextToSize(w.description, colW - 2);
+    let cy = y;
+
+    // Workstream name
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.navy);
+    doc.text(nameLines, x, cy);
+    cy += nameLines.length * NAME_H;
+
+    // Description
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...C.mid);
+    doc.text(descLines, x, cy);
+
+    // Owner — pinned to fixed position from bottom of row so all columns align
+    const ownerY = y + rowH - PAD + 1.5;
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.light);
+    doc.text(`Owner: ${w.owner}`, x, ownerY);
+
+    return rowH;
+  };
+
+  // ── PAGE 1 ────────────────────────────────────────────────────────────────
+  let y = margin;
+
+  // Header
+  doc.setFillColor(...C.navy);
+  doc.rect(margin, y, pw - margin * 2, 14, 'F');
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.white);
+  doc.text('100-Day Operational Plan', margin + 5, y + 7);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.light);
+  doc.text('VALUE DESK  |  PE Value Creation Intelligence Platform', pw - margin - 5, y + 7, { align: 'right' });
+  doc.setFillColor(...C.slate);
+  doc.rect(margin, y + 14, pw - margin * 2, 1.2, 'F');
+  y += 18;
+
+  // Deal parameters
+  const paramW = (pw - margin * 2) / 4;
+  const params = [
+    { label: 'Company Size', value: plan.inputs.companySize },
+    { label: 'Sector',       value: plan.inputs.sector },
+    { label: 'Thesis',       value: plan.inputs.thesis },
+    { label: 'Entry',        value: plan.inputs.entrySituation }
+  ];
+  params.forEach((p, i) => {
+    const px = margin + i * paramW;
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.light);
+    doc.text(p.label.toUpperCase(), px, y);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.navy);
+    doc.text(p.value, px, y + 5.5);
+  });
+  y += 13;
+
+  // Primary priority
+  if (plan.priority) {
+    doc.setFillColor(...C.slateBg);
+    doc.setDrawColor(...C.rule);
+    doc.setLineWidth(0.2);
+    doc.rect(margin, y, pw - margin * 2, 8, 'FD');
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.slate);
+    doc.text('PRIMARY FOCUS', margin + 3, y + 5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...C.navy);
+    doc.text(plan.priority, margin + 35, y + 5);
+    y += 11;
+  }
+
+  // Context banner
+  doc.setFillColor(...C.bg);
+  doc.setDrawColor(...C.rule);
+  doc.setLineWidth(0.2);
+  const ctxLines = doc.splitTextToSize(plan.sizeModifier, pw - margin * 2 - 8);
+  const ctxH = ctxLines.length * 5 + 5;
+  doc.rect(margin, y, pw - margin * 2, ctxH, 'FD');
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.mid);
+  doc.text(ctxLines, margin + 4, y + 6);
+  y += ctxH + 5;
+
+  // Phase column headers
+  const phases = [
+    { label: 'PHASE 1', title: 'Days 1-30: Diagnose & Stabilize', works: plan.phase1 },
+    { label: 'PHASE 2', title: 'Days 31-60: Prioritize & Plan',   works: plan.phase2 },
+    { label: 'PHASE 3', title: 'Days 61-100: Execute & Deliver',  works: plan.phase3 }
+  ];
+
+  const drawPhaseHeaders = (startY: number): number => {
+    colX.forEach((cx, ci) => {
+      doc.setFillColor(...C.slate);
+      doc.rect(cx, startY, colW, 1.5, 'F');
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...C.slate);
+      doc.text(phases[ci].label, cx, startY + 7);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...C.navy);
+      const tl = doc.splitTextToSize(phases[ci].title, colW);
+      doc.text(tl, cx, startY + 13);
+    });
+    const headerEnd = startY + 19;
+    doc.setDrawColor(...C.rule);
+    doc.setLineWidth(0.25);
+    doc.line(margin, headerEnd, pw - margin, headerEnd);
+    return headerEnd + 4;
+  };
+
+  y = drawPhaseHeaders(y);
+
+  // ── WORKSTREAM ROWS ───────────────────────────────────────────────────────
+  const maxWorks = Math.max(plan.phase1.length, plan.phase2.length, plan.phase3.length);
+
+  for (let wi = 0; wi < maxWorks; wi++) {
+    let rowH = 0;
+    phases.forEach(ph => {
+      const w = ph.works[wi];
+      if (w) rowH = Math.max(rowH, workH(w));
+    });
+
+    if (y + rowH > ph - 18) {
+      addFooter();
+      doc.addPage();
+      y = margin;
+      y = drawPhaseHeaders(y);
+    }
+
+    phases.forEach((ph, ci) => {
+      const w = ph.works[wi];
+      if (w) drawWork(w, colX[ci], y, rowH);
+    });
+    y += rowH;
+    doc.setDrawColor(...C.rule);
+    doc.setLineWidth(0.15);
+    doc.line(margin, y, pw - margin, y);
+    y += 5;
+  }
+
+  // ── MILESTONE + RISK ──────────────────────────────────────────────────────
+  const halfW = (pw - margin * 2 - 6) / 2;
+  if (y + 40 > ph - 18) {
+    addFooter();
+    doc.addPage();
+    y = margin;
+  }
+
+  // Compute box height dynamically based on content
+  const msLines = doc.splitTextToSize(plan.milestone, halfW - 8);
+  const riskLines = doc.splitTextToSize(plan.risk, halfW - 10);
+  const boxH = Math.max(msLines.length * 5.2 + 16, riskLines.length * 5.2 + 16, 32);
+
+  // Milestone box — slate fill, slate top bar
+  doc.setFillColor(...C.slateBg);
+  doc.setDrawColor(...C.rule);
+  doc.setLineWidth(0.2);
+  doc.rect(margin, y, halfW, boxH, 'FD');
+  doc.setFillColor(...C.slate);
+  doc.rect(margin, y, halfW, 1.5, 'F');
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.slate);
+  doc.text('KEY MILESTONE BY DAY 100', margin + 3, y + 8);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.navy);
+  doc.text(msLines, margin + 3, y + 14);
+
+  // Risk box — slate fill, red top bar, red border, no red fill
+  const rx = margin + halfW + 6;
+  doc.setFillColor(...C.slateBg);
+  doc.setDrawColor(...C.redBord);
+  doc.setLineWidth(0.2);
+  doc.rect(rx, y, halfW, boxH, 'FD');
+  doc.setFillColor(...C.redBord);
+  doc.rect(rx, y, halfW, 1.5, 'F');
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.mid);
+  doc.text('TOP RISK TO WATCH', rx + 3, y + 8);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.mid);
+  doc.text(riskLines, rx + 3, y + 14);
+  y += boxH + 6;
+
+  // ── DISCLAIMER ────────────────────────────────────────────────────────────
+  doc.setDrawColor(...C.rule);
+  doc.setLineWidth(0.2);
+  doc.line(margin, y, pw - margin, y);
+  y += 4;
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.light);
+  const disclaimer =
+    'This document was generated using Value Desk and is intended for informational and illustrative purposes only. The operational framework presented reflects common practices across PE-backed companies based on the parameters provided and does not constitute professional advisory, legal, or investment services. All workstreams, timelines, and ownership structures should be validated against company-specific diligence findings, management assessments, and fund strategy prior to implementation. This document is confidential and prepared solely for internal use by the intended recipient. It should not be reproduced, distributed, or shared without authorization.';
+  const dLines = doc.splitTextToSize(disclaimer, pw - margin * 2);
+  doc.text(dLines, margin, y);
+
+  addFooter();
+
+  const fname = `ValueDesk_100DayPlan_${plan.inputs.thesis.replace(/\s+/g, '')}_${plan.inputs.sector.replace(/\s+/g, '')}.pdf`;
+  doc.save(fname);
+};
+// ── END PDF EXPORT ─────────────────────────────────────────────────────────
+
   const labelStyle = "block text-[10px] font-bold text-[#64748B] uppercase tracking-[0.1em] mb-2 h-auto md:h-[42px] flex items-end";
   const inputStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all placeholder-[#94A3B8]";
   const selectStyle = "w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-none px-3 py-3 text-[14px] text-[#1E293B] focus:outline-none focus:border-[#475569] transition-all appearance-none cursor-pointer";
@@ -301,6 +586,15 @@ const HundredDayPlan = () => {
           >
             Generate Plan
           </button>
+          {plan && (
+            <button
+              onClick={exportPDF}
+              type="button"
+              className="w-40 border border-[#475569] text-[#475569] hover:bg-[#475569] hover:text-white font-bold uppercase tracking-[0.3em] text-[11px] py-4 transition-all"
+            >
+              Export PDF
+            </button>
+          )}
           <button
             onClick={resetPlan}
             type="button"
@@ -324,12 +618,12 @@ const HundredDayPlan = () => {
 
           <div className="bg-[#F8FAFC] border border-[#E2E8F0] px-6 py-4">
             <p className="text-[13px] text-[#64748B] leading-relaxed">
-              <span className="font-bold text-[#475569] uppercase tracking-wider text-[10px]">Context — </span>
+              <span className="font-bold text-[#475569] uppercase tracking-wider text-[10px]">Context -- </span>
               {plan.sizeModifier}
             </p>
           </div>
 
-          {/* THREE PHASE COLUMNS — stack on mobile */}
+          {/* THREE PHASE COLUMNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { label: 'Phase 1', title: 'Days 1–30: Diagnose & Stabilize', objective: 'Establish facts, secure the business, and build internal credibility.', works: plan.phase1 },
